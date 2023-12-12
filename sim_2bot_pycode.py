@@ -252,7 +252,7 @@ class TurtleBot3:
             vel_msg.linear.x = 0
             vel_msg.angular.z = 0
             self.velocity_publisher.publish(vel_msg)
-
+            rospy.spin
 if __name__ == '__main__':
     try:
         don= TurtleBot3()
