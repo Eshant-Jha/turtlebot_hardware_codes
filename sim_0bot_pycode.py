@@ -22,19 +22,19 @@ class TurtleBot3:
         self.path_publisher = rospy.Publisher('/path_topic_bot_0', Path, queue_size=10)  
         #self.pose_subscriber = rospy.Subscriber('/apriltag_two', Odometry, self.update_pose)  #APRIL TAG     
         self.pose_subscriber = rospy.Subscriber('/tb3_0/odom', Odometry, self.update_pose)          #
-        self.path_subscriber =rospy.Subscriber('/path_topic_bot_2', Path, self.update_path2) #OTHER BOT PATH
-        self.pose2_subscriber = rospy.Subscriber('/tb3_2/odom', Odometry, self.update_pose2) #OTHER BOT POSE
+        self.path_subscriber =rospy.Subscriber('/path_topic_bot_2', Path, self.update_path0) #OTHER BOT PATH
+        self.pose0_subscriber = rospy.Subscriber('/tb3_2/odom', Odometry, self.update_pose0) #OTHER BOT POSE
         
          
         self.pose = Odometry()
-        self.pose2 = Odometry()
+        self.pose0 = Odometry()
         self.robot_id=1
         
         self.path=[]
-        self.path2=[]
+        self.path0=[]
         
         print("path initialised for self is",self.path)
-        print("path of other bot subscribed",self.path2)
+        print("path of other bot subscribed",self.path0)
         self.rate = rospy.Rate(10)
         self.scaling=1
         
@@ -42,19 +42,19 @@ class TurtleBot3:
     def update_pose(self, data):
         self.pose = data
 
-    def update_path2(self, path_msg):    #OTHER BOT 
-        self.path2=[]
+    def update_path0(self, path_msg):    #OTHER BOT 
+        self.path0=[]
         
         for pose_stamped in path_msg.poses:
             x=pose_stamped.pose.position.x
             y=pose_stamped.pose.position.y
             
-            self.path2.append([int(x),int(y)])
+            self.path0.append([int(x),int(y)])
 
-    def update_pose2(self, data):
-        self.pose2 = data
+    def update_pose0(self, data):
+        self.pose0 = data
         
-        #self.pose2 = data
+        #self.pose0 = data
     def run(self):
 
         while not rospy.is_shutdown():
@@ -186,10 +186,10 @@ class TurtleBot3:
                
               
                   
-                print("self bot subscribing the the path=",self.path2)  #OTHER BOT 
+                print("self bot subscribing the the path=",self.path0)  #OTHER BOT 
                 print("collision testing ...")
                 #taking  intersection
-                collision_index =[index for index, (item1, item2) in enumerate(zip(self.path,self.path2)) if item1 == item2 and self.path.count(item1) == 1 and self.path2.count(item2) == 1]
+                collision_index =[index for index, (item1, item2) in enumerate(zip(self.path,self.path0)) if item1 == item2 and self.path.count(item1) == 1 and self.path0.count(item2) == 1]
                 
             
                 if collision_index:
@@ -199,7 +199,7 @@ class TurtleBot3:
                     
                     #calculating both bots orientation at collision point , to determine left/right side w.r.t bot
                     r1_ang = journal_code_1_orientation.track_orientation([self.path[q-1],self.path[q]]) 
-                    r2_ang = journal_code_1_orientation.track_orientation([self.path2[q-1],self.path2[q]])
+                    r2_ang = journal_code_1_orientation.track_orientation([self.path0[q-1],self.path0[q]])
                     
                 
                     if journal_code_1_orientation.right(r1_ang[0], r2_ang[0]) == True:
@@ -216,10 +216,10 @@ class TurtleBot3:
                         #floor & round can be used below bots but modified path changes    
                         current_state_of_robot = [math.floor(self.pose.pose.pose.position.x),math.floor(self.pose.pose.pose.position.y)] # SELF BOT positions
                         
-                        neighbour_robot = [round(self.pose2.pose.pose.position.x),round(self.pose2.pose.pose.position.x)] #OTHER BOT  positions
+                        neighbour_robot = [round(self.pose0.pose.pose.position.x),round(self.pose0.pose.pose.position.x)] #OTHER BOT  positions
                         
                         #Replanning here 
-                        self.path = search.aStarSearch(current_maze, 1, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
+                        self.path = search.aStarSearch(current_maze, self.robot_id, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
                         
                         
                         #set new v,w
@@ -240,25 +240,23 @@ class TurtleBot3:
                     #set v.w
           
                     print("collision not detected")
-                   
                     print("i have to go",local_goal)
                     present_position =[self.pose.pose.pose.position.x,self.pose.pose.pose.position.y]
                     print("i am present at :",present_position)
 
-
                     vel_msg.angular.z = self.angular_vel(local_goal)
                     vel_msg.linear.x = self.linear_vel(local_goal)
-
+                    
                     print("my angular velocity is ",vel_msg.angular.z)
                     print("my linear velocity is ",vel_msg.linear.x)
                     self.velocity_publisher.publish(vel_msg)
-                    print(vel_msg)
+                    #time.sleep(2)
                     self.rate.sleep()
                     
             vel_msg.linear.x = 0
             vel_msg.angular.z = 0
             self.velocity_publisher.publish(vel_msg)
-            rospy.spin()
+            rospy.spin
 if __name__ == '__main__':
     try:
         don= TurtleBot3()
