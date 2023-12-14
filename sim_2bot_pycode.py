@@ -153,7 +153,7 @@ class TurtleBot3:
         else:
            self.path[0].append(None)      
 
-        #time.sleep(10)
+       
         # Publish the path
        
 
@@ -184,7 +184,7 @@ class TurtleBot3:
                
                 #print("self bot is publishing the path =",path_msg)
                
-                time.sleep(8)
+              
                   
                 print("self bot subscribing the the path=",self.path0)  #OTHER BOT 
                 print("collision testing ...")
