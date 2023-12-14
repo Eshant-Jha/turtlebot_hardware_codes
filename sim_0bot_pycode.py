@@ -28,14 +28,14 @@ class TurtleBot3:
          
         self.pose = Odometry()
         self.pose2 = Odometry()
-        self.robot_id=0
+        self.robot_id=1
         
         self.path=[]
         self.path2=[]
         
         print("path initialised for self is",self.path)
         print("path of other bot subscribed",self.path2)
-        self.rate = rospy.Rate(100)
+        self.rate = rospy.Rate(10)
         self.scaling=1
         
 
@@ -184,7 +184,7 @@ class TurtleBot3:
                
                 #print("self bot is publishing the path =",path_msg)
                
-                time.sleep(8)
+              
                   
                 print("self bot subscribing the the path=",self.path2)  #OTHER BOT 
                 print("collision testing ...")
@@ -219,7 +219,7 @@ class TurtleBot3:
                         neighbour_robot = [round(self.pose2.pose.pose.position.x),round(self.pose2.pose.pose.position.x)] #OTHER BOT  positions
                         
                         #Replanning here 
-                        self.path = search.aStarSearch(current_maze, self.robot_id, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
+                        self.path = search.aStarSearch(current_maze, 1, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
                         
                         
                         #set new v,w
@@ -240,16 +240,25 @@ class TurtleBot3:
                     #set v.w
           
                     print("collision not detected")
+                   
+                    print("i have to go",local_goal)
+                    present_position =[self.pose.pose.pose.position.x,self.pose.pose.pose.position.y]
+                    print("i am present at :",present_position)
+
+
                     vel_msg.angular.z = self.angular_vel(local_goal)
                     vel_msg.linear.x = self.linear_vel(local_goal)
-                    
+
+                    print("my angular velocity is ",vel_msg.angular.z)
+                    print("my linear velocity is ",vel_msg.linear.x)
                     self.velocity_publisher.publish(vel_msg)
+                    print(vel_msg)
                     self.rate.sleep()
                     
             vel_msg.linear.x = 0
             vel_msg.angular.z = 0
             self.velocity_publisher.publish(vel_msg)
-
+            rospy.spin()
 if __name__ == '__main__':
     try:
         don= TurtleBot3()
