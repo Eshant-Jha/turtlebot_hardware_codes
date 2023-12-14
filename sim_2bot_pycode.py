@@ -28,14 +28,14 @@ class TurtleBot3:
          
         self.pose = Odometry()
         self.pose0 = Odometry()
-        self.robot_id=0
+        self.robot_id=2
         
         self.path=[]
         self.path0=[]
         
         print("path initialised for self is",self.path)
         print("path of other bot subscribed",self.path0)
-        self.rate = rospy.Rate(100)
+        self.rate = rospy.Rate(10)
         self.scaling=1
         
 
@@ -83,11 +83,11 @@ class TurtleBot3:
         
         if abs(self.angular_vel(goal_pose)) > 0.1:
             b = 0.08
-            return  k * self.euclidean_distance(goal_pose) * b*0.2  #here just give a constant value check k*dist*0.08 value put the same in this 
+            return  k * self.euclidean_distance(goal_pose) * b   #here just give a constant value check k*dist*0.08 value put the same in this 
         
 
 
-        return  k * self.euclidean_distance(goal_pose) * b*0.2 #here just give a constant value check k*dist*0.08 value put the same in this
+        return  k * self.euclidean_distance(goal_pose) * b #here just give a constant value check k*dist*0.08 value put the same in this
 
     def angular_vel(self, goal_pose, constant=1):
 
@@ -153,7 +153,7 @@ class TurtleBot3:
         else:
            self.path[0].append(None)      
 
-       
+        #time.sleep(10)
         # Publish the path
        
 
@@ -241,12 +241,16 @@ class TurtleBot3:
           
                     print("collision not detected")
                     print("i have to go",local_goal)
+                    present_position =[self.pose.pose.pose.position.x,self.pose.pose.pose.position.y]
+                    print("i am present at :",present_position)
+
                     vel_msg.angular.z = self.angular_vel(local_goal)
-                    print("my angular velocity is ",vel_msg.angular.z)
                     vel_msg.linear.x = self.linear_vel(local_goal)
+                    
                     print("my angular velocity is ",vel_msg.angular.z)
                     print("my linear velocity is ",vel_msg.linear.x)
                     self.velocity_publisher.publish(vel_msg)
+                    #time.sleep(2)
                     self.rate.sleep()
                     
             vel_msg.linear.x = 0
