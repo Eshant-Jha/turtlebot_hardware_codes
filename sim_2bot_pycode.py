@@ -11,7 +11,7 @@ from geometry_msgs.msg import Point, PoseStamped
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from nav_msgs.msg import Path
-from math import atan2, sqrt
+from math import atan2, floor, sqrt
 from tf.transformations import euler_from_quaternion
 
 class TurtleBot3:
@@ -36,7 +36,7 @@ class TurtleBot3:
         print("path initialised for self is",self.path)
         print("path of other bot subscribed",self.path0)
         self.rate = rospy.Rate(10)
-        self.scaling=1
+        self.scaling=4
         
 
     def update_pose(self, data):
@@ -159,9 +159,13 @@ class TurtleBot3:
 
         
         print(self.path)
-
-        for i in range(len(self.path)):
-            
+        #self.path_length=0
+        #self.path_length=range(len(self.path))
+        global i
+        i=0
+        while  i in range(len(self.path)-1):
+         
+         i=i+1   
          if i < (len(self.path)):   #edited on 15 december previousely i < (len(self.path)-1)
             local_goal=self.path[i]
             
@@ -186,8 +190,8 @@ class TurtleBot3:
                
               
                   
-                #print("self bot subscribing the the path=",self.path0)  #OTHER BOT 
-                print("collision testing ...")
+                print("self bot subscribing the the path=",self.path0)  #OTHER BOT 
+                #print("collision testing ...")
                 #taking  intersection
                 collision_index =[index for index, (item1, item2) in enumerate(zip(self.path,self.path0)) if item1 == item2 and self.path.count(item1) == 1 and self.path0.count(item2) == 1]
                 
@@ -207,32 +211,39 @@ class TurtleBot3:
                         print("other bot is right side ")
                         current_maze=maze.Maze(1)
                         
-                        collison_point = path[q]
-                        
-                        positions_after_collision=path[q+1:] 
+                        collison_point = self.path[q]
+                        print("collision point is",collison_point)
+                        positions_after_collision=self.path[q+1:] 
                         
                         #p2=[robot.current_state[0],robot.current_state[1]] #other robot position subscribe to be done here coordinates to be stored 
                         
                         #floor & round can be used below bots but modified path changes    
                         current_state_of_robot = [math.floor(self.pose.pose.pose.position.x),math.floor(self.pose.pose.pose.position.y)] # SELF BOT positions
-                        
+                        print("im at position",current_state_of_robot)
                         neighbour_robot = [round(self.pose0.pose.pose.position.x),round(self.pose0.pose.pose.position.x)] #OTHER BOT  positions
-                        
+                        #neighbour_robot=self.path0[q-1]
+                        print("other bot is at ",neighbour_robot)
                         #Replanning here 
-                        self.path = search.aStarSearch(current_maze, self.robot_id, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
+                        self.path = search.aStarSearch(current_maze, 1, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
+                        print("new path  ",self.path)
+
+                        local_goal=self.path[1]
+                        print("local goal changed to ",local_goal)
                         
-                        
+                        i = 0
+
                         #set new v,w
                         vel_msg.angular.z = self.angular_vel(local_goal)
                         vel_msg.linear.x = self.linear_vel(local_goal)
                         
                         self.velocity_publisher.publish(vel_msg)
                         self.rate.sleep()
+
                     else:
                         #set v,w
                         vel_msg.angular.z = self.angular_vel(local_goal)
                         vel_msg.linear.x = self.linear_vel(local_goal)
-                        
+                        print("collision detected but i will not follow rule ")
                         self.velocity_publisher.publish(vel_msg)
 
                         self.rate.sleep()
@@ -241,18 +252,19 @@ class TurtleBot3:
           
                     print("collision not detected")
                     print("i have to go",local_goal)
-                    present_position =[self.pose.pose.pose.position.x,self.pose.pose.pose.position.y]
-                    print("i am present at :",present_position)
-
+                    #present_position =[self.pose.pose.pose.position.x,self.pose.pose.pose.position.y]
+                    #print("i am present at :",present_position)
+                    print("changedpath , ",self.path)
                     vel_msg.angular.z = self.angular_vel(local_goal)
                     vel_msg.linear.x = self.linear_vel(local_goal)
                     
-                    print("my angular velocity is ",vel_msg.angular.z)
-                    print("my linear velocity is ",vel_msg.linear.x)
+                    #print("my angular velocity is ",vel_msg.angular.z)
+                    #print("my linear velocity is ",vel_msg.linear.x)
                     self.velocity_publisher.publish(vel_msg)
                     #time.sleep(2)
                     self.rate.sleep()
-                    
+                   
+                   
             vel_msg.linear.x = 0
             vel_msg.angular.z = 0
             self.velocity_publisher.publish(vel_msg)
