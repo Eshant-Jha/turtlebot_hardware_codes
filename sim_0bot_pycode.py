@@ -18,8 +18,8 @@ class TurtleBot3:
     
     def __init__(self):
         rospy.init_node('turtlebot3_controller_0', anonymous=True)
-        self.velocity_publisher = rospy.Publisher('/tb3_0/cmd_vel', Twist, queue_size=10)
-        self.path_publisher = rospy.Publisher('/path_topic_bot_0', Path, queue_size=10)  
+        self.velocity_publisher = rospy.Publisher('/tb3_0/cmd_vel', Twist, queue_size=1)
+        self.path_publisher = rospy.Publisher('/path_topic_bot_0', Path, queue_size=1)  
         #self.pose_subscriber = rospy.Subscriber('/apriltag_two', Odometry, self.update_pose)  #APRIL TAG     
         self.pose_subscriber = rospy.Subscriber('/tb3_0/odom', Odometry, self.update_pose)          #
         self.path_subscriber =rospy.Subscriber('/path_topic_bot_2', Path, self.update_path0) #OTHER BOT PATH
@@ -135,7 +135,7 @@ class TurtleBot3:
 
         x_initial =self.pose.pose.pose.position.x*self.scaling
         y_initial =self.pose.pose.pose.position.y*self.scaling
-        start_state=[int(x_initial),int(y_initial),0]
+        start_state=[int(round(x_initial)),int(round(y_initial)),0]
 
 
 
@@ -162,8 +162,8 @@ class TurtleBot3:
 
         for i in range(len(self.path)):
             
-         if i < (len(self.path)-1):
-            local_goal=self.path[i+1]
+         if i < (len(self.path)):
+            local_goal=self.path[i]
             
             print("lets go to next point ",local_goal)
         
@@ -186,8 +186,8 @@ class TurtleBot3:
                
               
                   
-                print("self bot subscribing the the path=",self.path0)  #OTHER BOT 
-                print("collision testing ...")
+                #print("self bot subscribing the the path=",self.path0)  #OTHER BOT 
+                #print("collision testing ...")
                 #taking  intersection
                 collision_index =[index for index, (item1, item2) in enumerate(zip(self.path,self.path0)) if item1 == item2 and self.path.count(item1) == 1 and self.path0.count(item2) == 1]
                 
@@ -214,7 +214,7 @@ class TurtleBot3:
                         #p2=[robot.current_state[0],robot.current_state[1]] #other robot position subscribe to be done here coordinates to be stored 
                         
                         #floor & round can be used below bots but modified path changes    
-                        current_state_of_robot = [math.floor(self.pose.pose.pose.position.x),math.floor(self.pose.pose.pose.position.y)] # SELF BOT positions
+                        current_state_of_robot = [math.round(self.pose.pose.pose.position.x),math.floor(self.pose.pose.pose.position.y)] # SELF BOT positions
                         
                         neighbour_robot = [round(self.pose0.pose.pose.position.x),round(self.pose0.pose.pose.position.x)] #OTHER BOT  positions
                         
@@ -232,7 +232,7 @@ class TurtleBot3:
                         #set v,w
                         vel_msg.angular.z = self.angular_vel(local_goal)
                         vel_msg.linear.x = self.linear_vel(local_goal)
-                        
+                        print("collision detected but i will not follow rule ")
                         self.velocity_publisher.publish(vel_msg)
 
                         self.rate.sleep()
@@ -242,13 +242,13 @@ class TurtleBot3:
                     print("collision not detected")
                     print("i have to go",local_goal)
                     present_position =[self.pose.pose.pose.position.x,self.pose.pose.pose.position.y]
-                    print("i am present at :",present_position)
+                    #print("i am present at :",present_position)
 
                     vel_msg.angular.z = self.angular_vel(local_goal)
                     vel_msg.linear.x = self.linear_vel(local_goal)
                     
-                    print("my angular velocity is ",vel_msg.angular.z)
-                    print("my linear velocity is ",vel_msg.linear.x)
+                    #print("my angular velocity is ",vel_msg.angular.z)
+                    #print("my linear velocity is ",vel_msg.linear.x)
                     self.velocity_publisher.publish(vel_msg)
                     #time.sleep(2)
                     self.rate.sleep()
