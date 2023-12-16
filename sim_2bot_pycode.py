@@ -18,8 +18,8 @@ class TurtleBot3:
     
     def __init__(self):
         rospy.init_node('turtlebot3_controller_2', anonymous=True)
-        self.velocity_publisher = rospy.Publisher('/tb3_2/cmd_vel', Twist, queue_size=10)
-        self.path_publisher = rospy.Publisher('/path_topic_bot_2', Path, queue_size=10)  
+        self.velocity_publisher = rospy.Publisher('/tb3_2/cmd_vel', Twist, queue_size=1)
+        self.path_publisher = rospy.Publisher('/path_topic_bot_2', Path, queue_size=1)  
         #self.pose_subscriber = rospy.Subscriber('/apriltag_two', Odometry, self.update_pose)  #APRIL TAG     
         self.pose_subscriber = rospy.Subscriber('/tb3_2/odom', Odometry, self.update_pose)          #
         self.path_subscriber =rospy.Subscriber('/path_topic_bot_0', Path, self.update_path0) #OTHER BOT PATH
@@ -135,7 +135,7 @@ class TurtleBot3:
 
         x_initial =self.pose.pose.pose.position.x*self.scaling
         y_initial =self.pose.pose.pose.position.y*self.scaling
-        start_state=[int(x_initial),int(y_initial),0]
+        start_state=[int(round(x_initial)),int(round(y_initial)),0]
 
 
 
@@ -162,8 +162,8 @@ class TurtleBot3:
 
         for i in range(len(self.path)):
             
-         if i < (len(self.path)-1):
-            local_goal=self.path[i+1]
+         if i < (len(self.path)):   #edited on 15 december previousely i < (len(self.path)-1)
+            local_goal=self.path[i]
             
             print("lets go to next point ",local_goal)
         
@@ -186,7 +186,7 @@ class TurtleBot3:
                
               
                   
-                print("self bot subscribing the the path=",self.path0)  #OTHER BOT 
+                #print("self bot subscribing the the path=",self.path0)  #OTHER BOT 
                 print("collision testing ...")
                 #taking  intersection
                 collision_index =[index for index, (item1, item2) in enumerate(zip(self.path,self.path0)) if item1 == item2 and self.path.count(item1) == 1 and self.path0.count(item2) == 1]
