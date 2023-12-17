@@ -1,0 +1,114 @@
+
+##########################################
+list of commands for the april tag thing
+
+source ~/uicam_ws/devel/setup.bash
+roslaunch ueye_cam rgb8.launch
+
+
+*****newtab*****
+
+
+ROS_NAMESPACE=camera rosrun image_proc image_proc
+
+
+*****newtab*****
+
+source catkin_ws/devel/setup.bash
+source catkin_ws/devel_isolated/setup.bash
+roslaunch apriltag_ros continuous_detection.launch
+
+*****newtab*****
+
+rostopic echo /tf
+
+*****newtab*****
+
+rosrun apriltag_ros tf_broadcaster
+
+*****newtab*****
+
+rosrun apriltag_ros don_2_publisher.py
+
+*****newtab*****
+
+rosrun apriltag_ros don_1_publisher.py
+
+
+*****newtab*****
+list of commands for the turtlebot
+
+
+ssh ubuntu@192.168.0.X
+
+
+eb, sb edit the file
+
+
+roslaunch turtlebot3_bringup turtlebot3_robot.launch 
+
+
+
+*****newtab*****
+for controller
+
+rosrun my_robot_controller ros_2law_april.py 
+
+
+*****newtab*****
+
+
+
+rosrun my_robot_controller ros_2law_april.py 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++++++++++++++++++++++
+
+rosrun apriltag_ros don_7_publisher.py 
+
+
+rosrun apriltag_ros don_0_publisher.py
+
+rosrun apriltag_ros don_2_publisher.py
+
+rosrun apriltag_ros don_1_publisher.py
+
++++++++++++++++++++++
+
+roslaunch turtlebot3_bringup turtlebot3_robot.launch 
+
+rosrun my_robot_controller dec_1_controller.py 
+
++++++++++++++++++++++++++++++++++
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
