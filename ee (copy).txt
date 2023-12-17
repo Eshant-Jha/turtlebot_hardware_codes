@@ -41,6 +41,10 @@ list of commands for the turtlebot
 
 ssh ubuntu@192.168.0.X
 
+nano ~/.bashrc
+edit the ip address
+
+source ~/.bashrc
 
 eb, sb edit the file
 
