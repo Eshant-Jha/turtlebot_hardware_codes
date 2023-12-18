@@ -36,7 +36,7 @@ class TurtleBot3:
         print("path initialised for self is",self.path)
         print("path of other bot subscribed",self.path2)
         self.rate = rospy.Rate(10)
-        self.scaling=4
+        self.scaling=1
         
 
     def update_pose(self, data):
