@@ -20,7 +20,7 @@ roslaunch apriltag_ros continuous_detection.launch
 
 *****newtab*****
 
-rostopic echo /tf
+rostopic echo /tf     #not_needed
 
 *****newtab*****
 
@@ -28,7 +28,7 @@ rosrun apriltag_ros tf_broadcaster
 
 *****newtab*****
 
-rosrun apriltag_ros don_2_publisher.py
+rosrun apriltag_ros don_2_publisher.py   
 
 *****newtab*****
 
@@ -38,15 +38,18 @@ rosrun apriltag_ros don_1_publisher.py
 *****newtab*****
 list of commands for the turtlebot
 
-
+secure shell of turtlebot (inorder to connect with the bot with master)
 ssh ubuntu@192.168.0.X
 
-nano ~/.bashrc
-edit the ip address
+password= turtlebot
+
+nano ~/.bashrc         (bashrc of turtlebot opens)
+edit the ip address of turtlebot 
 
 source ~/.bashrc
 
-eb, sb edit the file
+#use of acronym for above
+#eb=nano ~/.bashrc , sb=source ~/.bashrc ,    edit the file
 
 
 roslaunch turtlebot3_bringup turtlebot3_robot.launch 
