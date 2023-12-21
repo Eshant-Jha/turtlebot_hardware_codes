@@ -1,0 +1,9 @@
+things to do 
+
+1. Ensure that bots wait for other to completee their local goal , i.e after all reach local goal , then only they can take next step 
+2. Journal _orientation file use vector concept to find right and left 
+3. bot should publish the path from its present point to goal , previous path covered by bot should be deleted in publisher
+4. bot has to replan and go the original initial path , in case of path differed due to replanning
+5. VSDC video editing app
+6. Tmuxinator implement
+7. what should be the map for 10 map and obstacles
