@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from distutils.util import run_2to3
 import math
 
 "orientation tracking of the bot "
@@ -70,13 +71,24 @@ def calculate_angle(bot1_x, bot1_y, bot1_orientation, bot2_x, bot2_y, bot2_orien
     return angle_deg
 
 
-def right(r1_ang,r2_ang):
-    
- angle_difference = r2_ang - r1_ang
+def right(r1_ang,r2_ang): 
+    angle_difference = r2_ang - r1_ang # due to one of the four use cases i edit this portion by DON on 21/12/23
+    if angle_difference > -180 and angle_difference <= 0:
+        return False
+    elif angle_difference > 0 and angle_difference < 180:
+        return True  
+    elif r1_ang == 270 and r2_ang == 0:
+        return True
 
- if angle_difference > -180 and angle_difference <= 0:
-     return False
- elif angle_difference > 0 and angle_difference < 180:
-     return True
+ 
+
+
+
+
+
+
+
+
+
  
 

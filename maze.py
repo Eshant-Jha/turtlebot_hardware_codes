@@ -142,7 +142,7 @@ class Maze:
       
     to be added in this code FOR HEAD on COLLISION BOTH REPLANS CONSIDERING VECTOR FROM CURRENT TO COLLISON AND TAKING LEFT SIDE SUCCESSOR INVALID
      """
-     print("local planning doing for ",robot_id)
+     #print("local planning doing for ",robot_id)
      successors = []  
      for action in self.five_neighbor_actions:
          
@@ -163,7 +163,8 @@ class Maze:
                self.point_position_with_line(neighbor_robot_point,collison_point ,new_successor):
                continue
             
-         new_cost = maze_map.free_space_cost              
+         new_cost = maze_map.free_space_cost  
+         #print(new_successor)            
          successors.append([new_successor, new_action, new_cost])
          
      return successors
