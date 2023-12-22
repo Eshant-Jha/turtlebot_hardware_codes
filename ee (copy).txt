@@ -34,6 +34,9 @@ rosrun apriltag_ros don_2_publisher.py
 
 rosrun apriltag_ros don_1_publisher.py
 
+*****newtab*****
+
+rosrun apriltag_ros don_0_publisher.py
 
 *****newtab*****
 list of commands for the turtlebot
@@ -54,16 +57,21 @@ source ~/.bashrc
 
 roslaunch turtlebot3_bringup turtlebot3_robot.launch 
 
+!!!!!  importent from line 45 to 58 should be done for all three bots !!!!
 
 
 *****newtab*****
 for controller
-rosrun my_robot_controller ros_0law_april.py 
+
+rosrun my_robot_controller 3sim_0bot.py 
  
 *****newtab*****
 
-rosrun my_robot_controller ros_2law_april.py  
+rosrun my_robot_controller 3sim_1bot.py   
 
+*****newtab*****
+
+rosrun my_robot_controller 3sim_2bot.py   
 
 
 
@@ -76,42 +84,6 @@ rosrun image_view video_recorder image:=/camera/image_color/
 Recording will start 
 after recording press CTRL + C to stop 
 
-
-
-
-#below syntax have to be deleted why bringup again ?
-
-
-+++++++++++++++++++++
-
-rosrun apriltag_ros don_7_publisher.py   # why this is here it should be deleted ?
-
-
-rosrun apriltag_ros don_0_publisher.py
-
-rosrun apriltag_ros don_2_publisher.py
-
-rosrun apriltag_ros don_1_publisher.py
-
-+++++++++++++++++++++
-
-roslaunch turtlebot3_bringup turtlebot3_robot.launch 
-
-rosrun my_robot_controller dec_1_controller.py    #
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+______________________________________________________D______________________________________________
 
 
