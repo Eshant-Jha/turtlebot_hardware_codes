@@ -58,8 +58,8 @@ roslaunch turtlebot3_bringup turtlebot3_robot.launch
 
 *****newtab*****
 for controller
-
-rosrun my_robot_controller ros_2law_april.py   # which file you are talking about 
+rosrun my_robot_controller ros_0law_april.py 
+rosrun my_robot_controller ros_2law_april.py  
 
 
 *****newtab*****
