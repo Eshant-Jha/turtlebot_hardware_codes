@@ -59,31 +59,27 @@ roslaunch turtlebot3_bringup turtlebot3_robot.launch
 *****newtab*****
 for controller
 rosrun my_robot_controller ros_0law_april.py 
+ 
+*****newtab*****
+
 rosrun my_robot_controller ros_2law_april.py  
 
 
-*****newtab*****
 
 
 
-rosrun my_robot_controller ros_2law_april.py   #what  is the use of this ? 
++++++++++++++++++++++++++++++++++
+TO RECORD VIDEO 
 
+rosrun image_view video_recorder image:=/camera/image_color/
 
-
-
-
-
-
-
-
+Recording will start 
+after recording press CTRL + C to stop 
 
 
 
 
 #below syntax have to be deleted why bringup again ?
-
-
-
 
 
 +++++++++++++++++++++
@@ -103,13 +99,6 @@ roslaunch turtlebot3_bringup turtlebot3_robot.launch
 
 rosrun my_robot_controller dec_1_controller.py    #
 
-+++++++++++++++++++++++++++++++++
-TO RECORD VIDEO 
-
-rosrun image_view video_recorder image:=/camera/image_color/
-
-Recording will start 
-after recording press CTRL + C to stop 
 
 
 
