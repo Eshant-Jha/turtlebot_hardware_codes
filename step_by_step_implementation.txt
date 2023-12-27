@@ -85,5 +85,6 @@ Recording will start
 after recording press CTRL + C to stop 
 
 ______________________________________________________D______________________________________________
-
+two bot start and goal to test right side rule -      bot0 will be at 5,8 will go to 5,3
+                                                      simbot2 will be at 8,5 will go to 3,5
 
