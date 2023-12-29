@@ -8,6 +8,29 @@ things to do
 6. Tmuxinator implement
 7. what should be the map for 10 map and obstacles
 
+ISSUES FACED:
+
+1.due to synchronisation issue , while implementing rule for head on collision , bot which is starting first replans and 
+ the second bot cant replan as its subscribing the new path of other bot 
+2. in head -on collision , region on left side of vector pointing from self to target bot is taken , to bound the region distance from self bot
+ to test point should be less than 2 units 
+3. in head on collision logic , its  using q-1 q and q+1 to do path generation , right now its not taking into account of present bot position ,
+   so , if dection is too early , present head-on logic will lead to skipping waypoint from present position until q-1 positions 
+  as q-1 is given as start point .......
+   for this either threshold distance can take care or 
+   replanned path should be appended after q-2 point of original path 
+4. To deal with synchronisation issue in case of head on collision 
+   proposed solution :
+   each bot should publish 
+     previous path + present path (due to replanning)+ self.id of bot + other bot id  responsible for its replanning 
+    each bot should subscribe above 
+      it will check whether its responsible for replanning , comparing the botid with itself , 
+       in case its responsible for other bot replanning ,
+        it will take other bots previous path for taking  further decision  
+
+
+
+
 
 Progress Video links:
 
