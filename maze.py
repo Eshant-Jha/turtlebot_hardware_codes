@@ -7,7 +7,7 @@ Created on Tue Jun 20 21:26:13 2023
 import matplotlib
 import matplotlib.pyplot as plt
 import copy
-
+import numpy as np
 import maze_map
  
 
@@ -84,7 +84,7 @@ class Maze:
     
   
 
-#Check the p3 point position w.r.t to line joining p1 to p2
+   #Check the p3 point position w.r.t to line joining p1 to p2
   def point_position_with_line(self,p1, p2, p3):
       # p1 is the collision point
       # p2 is a point on the line joining collision and other bot coordinates (P1P2)
@@ -159,8 +159,9 @@ class Maze:
          
          #COLREGS rule 15 applied for collision avoidance with other bot /here its making obstacle zone 
 
-         if  self.point_position_with_line( start_state,neighbor_robot_point, new_successor) and \
+         if  self.point_position_with_line(start_state,neighbor_robot_point, new_successor) and \
                self.point_position_with_line(neighbor_robot_point,collison_point ,new_successor):
+
                continue
             
          new_cost = maze_map.free_space_cost  
@@ -168,6 +169,59 @@ class Maze:
          successors.append([new_successor, new_action, new_cost])
          
      return successors
+    
+      
+  def getSuccessors_head_on(self, robot_id, state, collison_point, neighbor_robot_point, start_state):    
+      
+
+     #HERE WE HAVE TO ENSURE  START STATE AND NEIGHBOUR STATE RESPECTIVE POINTS JUST BEFORE COLLISION TO HAVE 180  
+     successors = []  
+     for action in self.five_neighbor_actions:
+         
+         #Get individual action
+         del_x, del_y = self.five_neighbor_actions.get(action) 
+            
+         #Get successor
+         new_successor = [state[0] + del_x , state[1] + del_y]    #new_successor = [state[0] + del_x , state[1] + del_y, state[2]+1]
+         new_action = action
+         
+         #Check for static obstacle 
+         if self.isObstacle(new_successor):
+             continue
+         
+         #COLREGS rule 15 applied for collision avoidance with other bot /here its making obstacle zone 
+         
+         point_a =np.array(start_state)
+
+         point_b = np.array(neighbor_robot_point)
+         
+         test_point= np.array(new_successor)
+        # Vector from A to B
+         ab_vector = point_b - point_a
+
+        # Vector from A to test point
+         ap_vector = test_point - point_a
+
+         # Vector from B to test point
+
+         # Calculate cross products
+         cross_product_ap = np.cross(ab_vector, ap_vector)
+        
+        # Check conditions
+         if cross_product_ap >=0:
+            if np.linalg.norm(ap_vector)<=2.3:
+
+              #print("value headon ")      
+              continue
+         
+         new_cost = maze_map.free_space_cost  
+         #print(new_successor)            
+         successors.append([new_successor, new_action, new_cost])
+         
+     return successors 
+      
+      
+
     
       
       
