@@ -55,11 +55,17 @@ def aStarSearch(problem, robot_id, start_state, planner, collison_point, neighbo
 
       #Expand node and get successors
       if planner==1:  #if its planning globally
-        successors = problem.getSuccessors(current_node[0])        
-      else: #if it wants plan locally
+
+        successors = problem.getSuccessors(current_node[0])     
+           
+      elif planner==2: #if it wants plan locally AS PER COLREGS 15 RIGHT SIDE 
         
         successors= problem.getSuccessors_local(robot_id, current_node[0], collison_point, neighbor_robot_point, start_state)
-        
+
+      else : #IN CASE OF HEAD-ON COLLISION  
+
+        successors= problem.getSuccessors_head_on(robot_id, current_node[0], collison_point, neighbor_robot_point, start_state)   
+        print("head-on successor fetch")
       for successor, action, cost in successors:
           
           g = current_node[2] + cost
