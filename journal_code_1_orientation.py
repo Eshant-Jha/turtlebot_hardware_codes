@@ -79,7 +79,9 @@ def right(r1_ang,r2_ang):
         return True  
     elif r1_ang == 270 and r2_ang == 0:
         return True
-
+    ##HEAD-ON CONDITION    
+    elif abs(angle_difference) == 180:
+        return 2
  
 
 
