@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+
+import rospy
+import matplotlib.pyplot as plt 
+import time 
+from nav_msgs.msg import Path
+from geometry_msgs.msg import Point, PoseStamped
+from geometry_msgs.msg import Twist
+from nav_msgs.msg import Odometry
+from nav_msgs.msg import Path
+import matplotlib 
+import maze 
+import maze_map
+import copy 
+
+class Plot :
+
+    
+    map_plot_copy=[]
+    plot_colormap_norm =matplotlib.colors.Normalize(vmin=0.0, vmax =19.0)
+    fig ,ax =plt.subplots(1)
+    plt.axis('equal')
+    
+
+    def plot_map(self):
+        
+        plt.imshow(self.map_plot_copy, cmap=plt.cm.tab20c, norm=self.plot_colormap_norm)
+        plt
+        plt.show()
+
+    
+    def __init__(self):
+        rospy.init_node("node")
+        #Subscribing_Path
+        #self.path_subscriber_0 =rospy.Subscriber('/path_topic_bot_0', Path, self.update_path0)
+        self.path_subscriber_2 =rospy.Subscriber('/path_topic_bot_2', Path, self.update_path2)
+        self.path0=[]
+        self.path2=[]
+        self.scaling = 4
+        #Subscribing_Pose 
+        self.pose_subscriber  =  rospy.Subscriber('/tb3_2/odom', Odometry, self.update_pose2)         
+        #self.pose0_subscriber =  rospy.Subscriber('/tb3_0/odom', Odometry, self.update_pose0) 
+        self.pose2 = Odometry()
+        
+
+        ######Map setup #####################
+        self.maze_map=maze_map.maps_dictionary[1]
+        self.map_plot_copy =copy.deepcopy(self.maze_map.map_data)
+
+
+        start =[2,3] #as per launch file or as per start location
+        goal=  [4,6] #as per user
+        self.map_plot_copy[start[0]][start[1]]= maze_map.r1_start_id
+        self.map_plot_copy[goal[0]][goal[1]]= maze_map.r1_goal_id
+        self.plot_map()
+
+
+    def update_path2(self, path_msg):    #OTHER BOT 
+            self.path2=[]
+          
+            for pose_stamped in path_msg.poses:
+
+                x= pose_stamped.pose.position.x
+                y= pose_stamped.pose.position.y
+                
+                self.path2.append([int(x),int(y)])
+                
+                
+
+            print("its here",self.path2)
+            for coord in self.path2:
+                 
+                 x,y =coord
+
+                 self.map_plot_copy[x][y]=maze_map.r1_path_id
+              
+              
+            self.plot_map()
+
+
+    def update_pose2(self, data):
+        
+           self.pose2 = data
+
+           bot1_x = round(self.pose2.pose.pose.position.x*self.scaling)
+           bot1_y = round(self.pose2.pose.pose.position.y*self.scaling)
+           bot1_location= [bot1_x , bot1_y]
+
+           print(" bot 1 location",bot1_location)
+
+           self.map_plot_copy[bot1_x][bot1_y]= maze_map.r1_path_id
+           
+           self.plot_map()
+           #time.sleep(2)
+
+if __name__ == '__main__':
+    try:
+        eshant= Plot()
+        eshant.update_pose2()
+        eshant.update_path2()
+
+        
+        rospy.spin()
+        
+
+
+    except rospy.ROSInterruptException:
+        pass   
