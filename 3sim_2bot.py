@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from re import S
 import rospy
 import search
 import maze 
@@ -13,6 +14,8 @@ from nav_msgs.msg import Odometry
 from nav_msgs.msg import Path
 from math import atan2, floor, sqrt
 from tf.transformations import euler_from_quaternion
+
+from std_msgs.msg import Bool
 
 class TurtleBot3:
     
@@ -31,6 +34,17 @@ class TurtleBot3:
         self.pose1_subscriber = rospy.Subscriber('/tb3_1/odom', Odometry, self.update_pose1) #OTHER BOT POSE
         #self.pose1_subscriber = rospy.Subscriber('/apriltag_one', Odometry, self.update_pose1)
 
+        #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+==+=+=+=+=+=
+
+        self.sync1_subscriber = rospy.Subscriber('bot_sync_1', Bool, self.update_bot1_finished)
+        self.sync0_subscriber = rospy.Subscriber('bot_sync_0', Bool, self.update_bot0_finished)
+
+        self.sync2_pub = rospy.Publisher('bot_sync_2', Bool, queue_size=10)
+
+        self.bot0_finished = Bool()
+        self.bot1_finished = Bool()
+        self.bot2_finished = Bool()
+        #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=
          
         self.pose = Odometry()
         self.pose0 = Odometry()
@@ -75,7 +89,16 @@ class TurtleBot3:
     def update_pose1(self, data):
         self.pose1 = data
 
+    #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=
+        
+    def update_bot1_finished(self, data):
+        self.bot1_finished = data
 
+
+    def update_bot0_finished(self, data):
+        self.bot0_finished = data
+
+    #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=
 
     def run(self):
 
@@ -181,11 +204,20 @@ class TurtleBot3:
          if i < (len(self.path)):   #edited on 15 december previousely i < (len(self.path)-1)
             local_goal=self.path[i]
             
-            print("lets go to next point ",local_goal)
+            #print("lets go to next point ",local_goal)
         
             while self.euclidean_distance(local_goal) >= distance_tolerance:
                 #here it need to subscribe nodes :
+
+
+
                 path_msg = Path()
+
+                #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=
+                self.bot2_finished.data = False
+
+                self.sync2_pub.publish(self.bot2_finished)
+                #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=
                
                 for point in self.path:
                     
@@ -195,98 +227,139 @@ class TurtleBot3:
                     path_msg.poses.append(pose_stamped)
 
                 self.path_publisher.publish(path_msg)
-                   
+
+                
                 collision_index_0 =[index for index, (item1, item2) in enumerate(zip(self.path,self.path0)) if item1 == item2 and self.path.count(item1) == 1 and self.path0.count(item2) == 1]
                 collision_index_1 =[index for index, (item1, item2) in enumerate(zip(self.path,self.path1)) if item1 == item2 and self.path.count(item1) == 1 and self.path1.count(item2) == 1]
             
-                if collision_index_0 or collision_index_1:
 
-                    print("oh shit collision found ")
+                ###################################################### 
+                bot_0_x = self.pose0.pose.pose.position.x
+                bot_0_y = self.pose0.pose.pose.position.y 
+                bot_0_position =[bot_0_x*self.scaling,bot_0_y*self.scaling]
+                print("bot 0 is at  ",bot_0_position)
+                threshold_distance_0= self.euclidean_distance(bot_0_position)*self.scaling
 
-                    if  collision_index_0:
+                bot_1_x = self.pose1.pose.pose.position.x
+                bot_1_y = self.pose1.pose.pose.position.y 
+                bot_1_position =[bot_1_x*self.scaling,bot_1_y*self.scaling]
+                print("bot 1 is at  ",bot_1_position)
+                threshold_distance_1= self.euclidean_distance(bot_1_position)*self.scaling
 
-                        q = collision_index_0[0]
-                        r2_ang = journal_code_1_orientation.track_orientation([self.path[q-1],self.path[q]])
-                        r0_ang = journal_code_1_orientation.track_orientation([self.path0[q-1],self.path0[q]])
-                    
-                        if journal_code_1_orientation.right(r2_ang[0], r0_ang[0]) == True:
+
+                ######################################################
+
+                if  collision_index_0 and threshold_distance_0 <=3:
+                    q = collision_index_0[0]
+                    r1_ang = journal_code_1_orientation.track_orientation([self.path[q-1],self.path[q]])
+                    r2_ang = journal_code_1_orientation.track_orientation([self.path0[q-1],self.path0[q]])
+                    if journal_code_1_orientation.right(r1_ang[0], r2_ang[0]) == True:
                             
-                            print("my bad   bot0 is right side ")
-                            current_maze=maze.Maze(1)
-
-                            collison_point = self.path[q]
-                            print("collision point is",collison_point)
-                            positions_after_collision=self.path[q+1:] 
-
-                            current_state_of_robot = [round(self.pose.pose.pose.position.x*self.scaling),round(self.pose.pose.pose.position.y*self.scaling)] # SELF BOT positions
-
-                            neighbour_robot=self.path0[q-1]
-
-                            self.path = search.aStarSearch(current_maze, 1, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
-                            print("new path  ",self.path)
-
-                            local_goal=self.path[1]
-
-                        
-                            i = 0
-                            vel_msg.angular.z = self.angular_vel(local_goal)
-                            vel_msg.linear.x = self.linear_vel(local_goal)
-                            self.velocity_publisher.publish(vel_msg)
-                            self.rate.sleep()
-                        else:
-                            print("i dont give a shit bot0 ") 
-                            vel_msg.angular.z = self.angular_vel(local_goal)
-                            vel_msg.linear.x = self.linear_vel(local_goal)
-                            self.velocity_publisher.publish(vel_msg)
-                            self.rate.sleep()
-
-
-                    elif  collision_index_1: 
-                        q = collision_index_1[0]
-                        r2_ang = journal_code_1_orientation.track_orientation([self.path[q-1],self.path[q]])
-                        r1_ang = journal_code_1_orientation.track_orientation([self.path1[q-1],self.path1[q]])
-
-                        if journal_code_1_orientation.right(r2_ang[0], r1_ang[0]) == True:
-                        
-                            print("other bot is right side ")
-                            current_maze=maze.Maze(1)
-                        
-                            collison_point = self.path[q]
-                            print("collision point is",collison_point)
-                            positions_after_collision=self.path[q+1:] 
- 
-                            current_state_of_robot = [round(self.pose.pose.pose.position.x*self.scaling),round(self.pose.pose.pose.position.y*self.scaling)] # SELF BOT positions
- 
-                            neighbour_robot=self.path1[q-1]
-
-                            self.path = search.aStarSearch(current_maze, 1, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
-                            print("new path  ",self.path)
-                            #print("self bot subscribing the the path=",self.path0)    
-                            local_goal=self.path[1]
-                      
-                            print("local goal changed to ",local_goal)
-
-                        
-                            i = 0
-                            vel_msg.angular.z = self.angular_vel(local_goal)
-                            vel_msg.linear.x = self.linear_vel(local_goal)
-                            self.velocity_publisher.publish(vel_msg)
-                            self.rate.sleep()
-
-                        else:
-                            print("i dont give a shit bot1 ")    
-                            vel_msg.angular.z = self.angular_vel(local_goal)
-                            vel_msg.linear.x = self.linear_vel(local_goal)
-                            self.velocity_publisher.publish(vel_msg)
-                            self.rate.sleep()
-
-                    else:
-                       
+                        #print("my bad   bot0 is right side ")
+                        current_maze=maze.Maze(1)
+                        collison_point = self.path[q]
+                        #print("collision point is",collison_point)
+                        positions_after_collision=self.path[q+1:] 
+                        current_state_of_robot = [round(self.pose.pose.pose.position.x*self.scaling),round(self.pose.pose.pose.position.y*self.scaling)] # SELF BOT positions
+                        neighbour_robot=self.path0[q-1]
+                        self.path = search.aStarSearch(current_maze, 1, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
+                        #print("new path  ",self.path)
+                        local_goal=self.path[1]
+                        i = 0
                         vel_msg.angular.z = self.angular_vel(local_goal)
                         vel_msg.linear.x = self.linear_vel(local_goal)
-                        print("i lied ")
                         self.velocity_publisher.publish(vel_msg)
                         self.rate.sleep()
+
+
+
+                    elif journal_code_1_orientation.right(r1_ang[0], r2_ang[0]) == 2:
+
+                        #print("other bot is head-on ")
+                        current_maze=maze.Maze(1)
+                        collison_point = self.path[q]
+                        positions_after_collision=self.path[q+1:] 
+                        current_state_of_robot = self.path[q-1]    #this is necessary to have logic work \
+                        #shortcoming is that from present state it has to directly go to q-1 BUT IT CAN BE RECTIFIED BY USING THRESHOLD DISTANCE 
+                        neighbour_robot=self.path0[q-1]
+                        self.path = search.aStarSearch(current_maze, 1, current_state_of_robot, 3, collison_point, neighbour_robot, positions_after_collision)
+                        #print("new path  ",self.path)
+                        #print("self bot subscribing the the path=",self.path0)    
+                        local_goal=self.path[1]
+                        #print("local goal changed to ",local_goal)
+                        i = 0 #SINCE PATH REPLANNED SO IT HAS TO START FROM BEGINNING 
+                        vel_msg.angular.z = self.angular_vel(local_goal)
+                        vel_msg.linear.x = self.linear_vel(local_goal)
+                        self.velocity_publisher.publish(vel_msg)
+                        self.rate.sleep()
+
+
+
+                    else:
+                        #print("i dont give a shit bot0 ") 
+                        vel_msg.angular.z = self.angular_vel(local_goal)
+                        vel_msg.linear.x = self.linear_vel(local_goal)
+                        self.velocity_publisher.publish(vel_msg)
+                        self.rate.sleep()
+
+
+
+                elif  collision_index_1 and threshold_distance_1 <=3: 
+                    q = collision_index_1[0]
+                    r2_ang = journal_code_1_orientation.track_orientation([self.path1[q-1],self.path1[q]])
+                    r1_ang = journal_code_1_orientation.track_orientation([self.path[q-1],self.path[q]])
+                    
+                    if journal_code_1_orientation.right(r1_ang[0], r2_ang[0]) == True:
+                        
+                        #print("other bot is right side ")
+                        current_maze=maze.Maze(1)
+                        collison_point = self.path[q]
+                        #print("collision point is",collison_point)
+                        positions_after_collision=self.path[q+1:] 
+                        current_state_of_robot = [round(self.pose.pose.pose.position.x*self.scaling),round(self.pose.pose.pose.position.y*self.scaling)] # SELF BOT positions
+                        neighbour_robot=self.path1[q-1]
+                        self.path = search.aStarSearch(current_maze, 1, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
+                        #print("new path  ",self.path)   
+                        local_goal=self.path[1]
+                        #print("local goal changed to ",local_goal)
+                        i = 0 #SINCE PATH REPLANNED SO IT HAS TO START FROM BEGINNING 
+                        vel_msg.angular.z = self.angular_vel(local_goal)
+                        vel_msg.linear.x = self.linear_vel(local_goal)
+                        self.velocity_publisher.publish(vel_msg)
+                        self.rate.sleep()
+
+
+
+                    elif journal_code_1_orientation.right(r1_ang[0], r2_ang[0]) == 2:
+
+                        #print("other bot is head-on ")
+                        current_maze=maze.Maze(1)
+                        collison_point = self.path[q]
+                        positions_after_collision=self.path[q+1:] 
+                        current_state_of_robot = self.path[q-1]    #this is necessary to have logic work \
+                        #shortcoming is that from present state it has to directly go to q-1 BUT IT CAN BE RECTIFIED BY USING THRESHOLD DISTANCE 
+                        neighbour_robot=self.path1[q-1]
+                        self.path = search.aStarSearch(current_maze, 1, current_state_of_robot, 3, collison_point, neighbour_robot, positions_after_collision)
+                        #print("new path  ",self.path)
+                        #print("self bot subscribing the the path=",self.path0)    
+                        local_goal=self.path[1]
+                        #print("local goal changed to ",local_goal)
+                        i = 0 #SINCE PATH REPLANNED SO IT HAS TO START FROM BEGINNING 
+                        vel_msg.angular.z = self.angular_vel(local_goal)
+                        vel_msg.linear.x = self.linear_vel(local_goal)
+                        self.velocity_publisher.publish(vel_msg)
+                        self.rate.sleep()
+
+
+                    else:
+                        print("i dont give a shit bot1 ")    
+                        vel_msg.angular.z = self.angular_vel(local_goal)
+                        vel_msg.linear.x = self.linear_vel(local_goal)
+                        self.velocity_publisher.publish(vel_msg)
+                        self.rate.sleep()
+
+
+
 
                 else:
                     
@@ -301,11 +374,33 @@ class TurtleBot3:
                     self.velocity_publisher.publish(vel_msg)
                     self.rate.sleep()
 
+
             #print("bot1 path=",self.path1)  #OTHER BOT  
             #print("bot2 path=",self.path2)     
             vel_msg.linear.x = 0
             vel_msg.angular.z = 0
             self.velocity_publisher.publish(vel_msg)
+            
+            #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=
+            
+            self.bot2_finished.data = True
+            self.sync2_pub.publish(self.bot2_finished)
+
+            time.sleep(0.1)
+
+            while self.bot1_finished.data == False or self.bot0_finished.data == False or self.bot2_finished.data == False:
+                vel_msg.linear.x = 0
+                vel_msg.angular.z = 0
+                self.velocity_publisher.publish(vel_msg)
+                if self.bot1_finished.data == True and self.bot0_finished.data == True and self.bot2_finished.data == True:
+                    break
+
+            time.sleep(0.2)
+
+            #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=
+
+
+
             rospy.spin
 
 if __name__ == '__main__':
