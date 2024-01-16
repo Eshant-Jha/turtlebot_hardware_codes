@@ -24,10 +24,10 @@ class Visual :
         self.robot_pose = [0.0, 0.0, 0.0] 
         self.scale_x ,self.scale_y =[4,4]
 
-        self.x_offset = 0.02  # x offset to adjust with the map, home coordinates
-        self.y_offset = 0.02  # y offset to adjust with the map, home coordinates
-        self.scale_x =  100   # scale for x values to adjust with the map
-        self.scale_y =  100   # scale for y values to adjust with the map
+        self.x_offset = 12.500  # x offset to adjust with the map, home coordinates
+        self.y_offset = 12.500 # y offset to adjust with the map, home coordinates
+        self.scale_x =  90   # scale for x values to adjust with the map
+        self.scale_y =  90   # scale for y values to adjust with the map
         self.heading_line_length = 15.0 #length of the black geading line
 
 
@@ -40,7 +40,7 @@ class Visual :
         Visual.ax1.imshow(img)  # Use the common axes
 
         # Figure setup
-        Visual.ax1.set(xlabel='X(m)', ylabel='Y(m)')
+        Visual.ax1.set(xlabel='X(x 10mm)', ylabel='Y(x 10mm)')
 
         # Initialize scatter plot handle
         #self.robot_point_plot_handle = Visual.ax1.scatter(0, 0, alpha=1.0, s=50, color='green')
@@ -127,7 +127,9 @@ class Visual :
          
         #############################################################################
         ###error was used when ekf waqs in plot , right now error values given randon number to statisfy the below code lines 
-        error_angle = 0.03           #np.arctan2(eigenvects[1,0], eigenvects[0,0])   
+        error_angle = 0.01
+        
+                   #np.arctan2(eigenvects[1,0], eigenvects[0,0])   
         error_x = 0.01               #np.sqrt(eigenvals[0])
         error_y = 0.01               #np.sqrt(eigenvals[1])
 
@@ -153,14 +155,16 @@ if __name__ == '__main__':
     #Multi-bots object creation 
    
     robot1=Visual(0)
-    robot2=Visual(2)
+    robot2=Visual(1)
+    robot3=Visual(2)
 
 
     #subscribing the required topic and updating its callback function
  
 
-    rospy.Subscriber('/tb3_2/odom', Odometry, lambda data: robot1.ekf_callback(data))
-    rospy.Subscriber('/tb3_0/odom', Odometry, lambda data: robot2.ekf_callback(data))
+    rospy.Subscriber('/tb3_2/odom', Odometry, lambda data: robot3.ekf_callback(data))
+    rospy.Subscriber('/tb3_0/odom', Odometry, lambda data: robot1.ekf_callback(data))
+    rospy.Subscriber('/tb3_1/odom', Odometry, lambda data: robot2.ekf_callback(data))
     
     #rospy.spin()
     #rate
