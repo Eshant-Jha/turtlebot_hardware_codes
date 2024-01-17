@@ -296,7 +296,7 @@ class TurtleBot3:
 
 
                     else:
-                        #print("i dont give a shit bot0 ") 
+                        print("self not going to act for bot0 ") 
                         vel_msg.angular.z = self.angular_vel(local_goal)
                         vel_msg.linear.x = self.linear_vel(local_goal)
                         self.velocity_publisher.publish(vel_msg)
@@ -352,7 +352,7 @@ class TurtleBot3:
 
 
                     else:
-                        print("i dont give a shit bot1 ")    
+                        print("self not going to act for bot1 ")    
                         vel_msg.angular.z = self.angular_vel(local_goal)
                         vel_msg.linear.x = self.linear_vel(local_goal)
                         self.velocity_publisher.publish(vel_msg)
