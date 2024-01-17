@@ -260,12 +260,12 @@ class TurtleBot3:
                 if  collision_index_2 and threshold_distance_2 <=3:
 
                     q = collision_index_2[0]
-                    print ("oh fuck bot 2", q)
+                    print ("collision found with bot 2", q)
                     r2_ang = journal_code_1_orientation.track_orientation([self.path2[q-1],self.path2[q]])
                     r1_ang = journal_code_1_orientation.track_orientation([self.path[q-1],self.path[q]])
                         
                     if journal_code_1_orientation.right(r1_ang[0], r2_ang[0]) == True:
-                        print("my bad  bot2 is right side ")
+                        print("bot2 is right side ")
                         current_maze=maze.Maze(1)
                         
                         collison_point = self.path[q]
@@ -308,7 +308,7 @@ class TurtleBot3:
                         self.velocity_publisher.publish(vel_msg)
                         self.rate.sleep()
                     else:
-                        print("i dont give a shit bot2 ")
+                        print("self not going to act for bot2 ")
                         vel_msg.angular.z = self.angular_vel(local_goal)
                         vel_msg.linear.x = self.linear_vel(local_goal)
                         self.velocity_publisher.publish(vel_msg)
@@ -317,17 +317,17 @@ class TurtleBot3:
                 elif  collision_index_0 and threshold_distance_0 <=3: 
                         
                     q = collision_index_0[0]
-                    print ("oh fuck bot 0",q)
+                    print ("collision found with bot 0",q)
                     r2_ang = journal_code_1_orientation.track_orientation([self.path0[q-1],self.path0[q]])
                     r1_ang = journal_code_1_orientation.track_orientation([self.path[q-1],self.path[q]]) 
                         
                     if journal_code_1_orientation.right(r1_ang[0], r2_ang[0]) == True:
                         
-                        print("my bad  bot0 is right side ")
+                        #print("bot0 is right side ")
                         current_maze=maze.Maze(1)
                         
                         collison_point = self.path[q]
-                        print("collision point is",collison_point)
+                        #print("collision point is",collison_point)
                         positions_after_collision=self.path[q+1:] 
 
                         current_state_of_robot = [round(self.pose.pose.pose.position.x*self.scaling),round(self.pose.pose.pose.position.y*self.scaling)] # SELF BOT positions
@@ -367,7 +367,7 @@ class TurtleBot3:
                         self.rate.sleep()
 
                     else:
-                        print("i dont give a shit bot0 ")    
+                        print("self not going to act for bot0 ")    
                         vel_msg.angular.z = self.angular_vel(local_goal)
                         vel_msg.linear.x = self.linear_vel(local_goal)
                         self.velocity_publisher.publish(vel_msg)
@@ -380,7 +380,7 @@ class TurtleBot3:
                     #print("collision not detected")
                     #print("i have to go",local_goal)
                     present_position =[round(self.pose.pose.pose.position.x*self.scaling),round(self.pose.pose.pose.position.y*self.scaling)]
-                    #print("i am present at :",present_position)
+                    print("i am present at :",present_position)
                    
                     vel_msg.angular.z = self.angular_vel(local_goal)
                     vel_msg.linear.x = self.linear_vel(local_goal)                    
@@ -397,9 +397,6 @@ class TurtleBot3:
             #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=
             
             self.bot1_finished.data = True
-            current_time = time.strftime("%H:%M:%S")
-            rospy.loginfo(current_time)
-
 
             self.sync1_pub.publish(self.bot1_finished)
 
