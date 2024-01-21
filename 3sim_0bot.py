@@ -64,7 +64,7 @@ class TurtleBot3:
         
         #print("path initialised for self is",self.path)
         #print("path of other bot subscribed",self.path2)
-        self.rate = rospy.Rate(100)
+        self.rate = rospy.Rate(10)
         self.scaling=4
         
 
@@ -225,6 +225,8 @@ class TurtleBot3:
 
 
                 #+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=++=+=+=+=+=+=
+                self.bot1_finished.data = True
+                self.bot2_finished.data = True
                 self.bot0_finished.data = False
 
                 self.sync0_pub.publish(self.bot0_finished)
@@ -264,11 +266,11 @@ class TurtleBot3:
 
 
 
-                if  collision_index_2 and threshold_distance_2 <=3:
+                while  collision_index_2 and threshold_distance_2 <=3:
             
 
                     q = collision_index_2[0]
-                    print("collision found with bot 2 ", q)
+                    print("collision found with bot 2 ", self.path[q])
                     r2_ang = journal_code_1_orientation.track_orientation([self.path2[q-1],self.path2[q]])
                     r1_ang = journal_code_1_orientation.track_orientation([self.path[q-1],self.path[q]])
                         
@@ -300,7 +302,7 @@ class TurtleBot3:
 
                     elif journal_code_1_orientation.right(r1_ang[0], r2_ang[0]) == 2:
 
-                        #print("other bot is head-on ")
+                        print("bot 2 is head-on ")
                         current_maze=maze.Maze(1)
                         collison_point = self.path[q]
                         positions_after_collision=self.path[q+1:] 
@@ -330,10 +332,10 @@ class TurtleBot3:
     
 
 
-                elif collision_index_1 and threshold_distance_1 <=3: 
+                while collision_index_1 and threshold_distance_1 <=3: 
                     
                     q = collision_index_1[0]
-                    print(" collision found with bot 1 ",q)
+                    print(" collision found with bot 1,  " , self.path[q])
                     r2_ang = journal_code_1_orientation.track_orientation([self.path1[q-1],self.path1[q]])
                     r1_ang = journal_code_1_orientation.track_orientation([self.path[q-1],self.path[q]])
 
@@ -366,7 +368,7 @@ class TurtleBot3:
 
                     elif journal_code_1_orientation.right(r1_ang[0], r2_ang[0]) == 2:
 
-                        #print("other bot is head-on ")
+                        print("bot 2 is head-on ")
                         current_maze=maze.Maze(1)
                         collison_point = self.path[q]
                         positions_after_collision=self.path[q+1:] 
@@ -399,8 +401,8 @@ class TurtleBot3:
           
                     #print("collision not detected")
                     #print("i have to go",local_goal)
-                    present_position =[round(self.pose.pose.pose.position.x*self.scaling),round(self.pose.pose.pose.position.y*self.scaling)]
-                    print("i am present at  :",present_position)
+                    #present_position =[round(self.pose.pose.pose.position.x*self.scaling),round(self.pose.pose.pose.position.y*self.scaling)]
+                    #print("i am present at  :",present_position)
                 
                     vel_msg.angular.z = self.angular_vel(local_goal)
                     vel_msg.linear.x = self.linear_vel(local_goal)
@@ -411,7 +413,8 @@ class TurtleBot3:
 
                     
             #print("bot1 path=",self.path1)  #OTHER BOT  
-            #print("bot2 path=",self.path2)      
+            #print("bot2 path=",self.path2) 
+            #self.path.pop(0)     
             vel_msg.linear.x = 0
             vel_msg.angular.z = 0
             self.velocity_publisher.publish(vel_msg)
