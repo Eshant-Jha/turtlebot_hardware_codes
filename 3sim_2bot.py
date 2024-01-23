@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-from re import S
-from telnetlib import Telnet
-
 from matplotlib.patheffects import withSimplePatchShadow
 import rospy
 import search
