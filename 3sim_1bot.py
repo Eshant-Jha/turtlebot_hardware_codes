@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from ast import While
 import rospy
 import search
 import maze 
