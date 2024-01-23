@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from re import T
 import rospy
 import search
 import maze 
