@@ -27,7 +27,7 @@ class TurtleBot3:
         
         self.path0_subscriber =rospy.Subscriber('/path_topic_bot_0', Path, self.update_path0) #OTHER BOT PATH
         self.pose0_subscriber = rospy.Subscriber('/tb3_0/odom', Odometry, self.update_pose0) #OTHER BOT POSE
-        #self.pose0_subscriber = rospy.Subscriber('/apriltag_zero', Odometry, self.update_pose)
+        #self.pose0_subscriber = rospy.Subscriber('/apriltag_zero', Odometry, self.update_pose0)
 
         self.path2_subscriber =rospy.Subscriber('/path_topic_bot_2', Path, self.update_path2) #OTHER BOT PATH
         self.pose2_subscriber = rospy.Subscriber('/tb3_2/odom', Odometry, self.update_pose2) #OTHER BOT POSE        
