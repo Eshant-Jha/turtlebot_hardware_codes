@@ -3,14 +3,14 @@
 as per 28/1/24
 the tmux made for full implementation 
 
-*****first we need to go to the src folder of the my_robot _controller*****
-*****then open new terminal there *****
+1*****first we need to go to the src folder of the my_robot _controller*****
+2*****then open new terminal there *****
 
-*****run the command *****
+3*****run the command *****
 ./tmux_april.sh
 *****thil will do all the things related to apriltag*****
 
-*****for killing the tmux *****
+4*****for killing the tmux *****
 tmux kill-server
 
 for the ssh we have to do that manually
