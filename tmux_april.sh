@@ -23,6 +23,11 @@ sleep 2  # Introduce a 1-second delay
 window=3
 tmux new-window -t $session:$window -n 'coordinate_broadcast'
 tmux send-keys -t $session:$window 'rosrun apriltag_ros tf_broadcaster' C-m
+sleep 1  # Introduce a 1-second delay\
+
+window=4
+tmux new-window -t $session:$window -n 'tagpub'
+tmux send-keys -t $session:$window 'rosrun apriltag_ros pub.py' C-m
 sleep 1  # Introduce a 1-second delay
 
 
