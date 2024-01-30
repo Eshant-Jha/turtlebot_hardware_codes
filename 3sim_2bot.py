@@ -252,7 +252,7 @@ class TurtleBot3:
 
                 ######################################################
 
-                while  collision_index_0 and threshold_distance_0 <=3:
+                if  collision_index_0 and threshold_distance_0 <=3:
                     q = collision_index_0[0]
                     r1_ang = journal_code_1_orientation.track_orientation([self.path[q-1],self.path[q]])
                     r2_ang = journal_code_1_orientation.track_orientation([self.path0[q-1],self.path0[q]])
@@ -308,7 +308,7 @@ class TurtleBot3:
 
 
 
-                while  collision_index_1 and threshold_distance_1 <=3: 
+                elif  collision_index_1 and threshold_distance_1 <=3: 
                     q = collision_index_1[0]
                     r2_ang = journal_code_1_orientation.track_orientation([self.path1[q-1],self.path1[q]])
                     r1_ang = journal_code_1_orientation.track_orientation([self.path[q-1],self.path[q]])
