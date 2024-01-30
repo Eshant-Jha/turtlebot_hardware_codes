@@ -265,7 +265,7 @@ class TurtleBot3:
 
 
 
-                while  collision_index_2 and threshold_distance_2 <=3:
+                if  collision_index_2 and threshold_distance_2 <=3:
             
 
                     q = collision_index_2[0]
@@ -331,7 +331,7 @@ class TurtleBot3:
     
 
 
-                while collision_index_1 and threshold_distance_1 <=3: 
+                elif collision_index_1 and threshold_distance_1 <=3: 
                     
                     q = collision_index_1[0]
                     print(" collision found with bot 1,  " , self.path[q])
