@@ -65,7 +65,7 @@ def aStarSearch(problem, robot_id, start_state, planner, collison_point, neighbo
       else : #IN CASE OF HEAD-ON COLLISION  
 
         successors= problem.getSuccessors_head_on(robot_id, current_node[0], collison_point, neighbor_robot_point, start_state)   
-        print("head-on successor fetch")
+        
       for successor, action, cost in successors:
           
           g = current_node[2] + cost
