@@ -259,7 +259,7 @@ class TurtleBot3:
 
                 ######################################################
 
-                while  collision_index_2 and threshold_distance_2 <=3:
+                if  collision_index_2 and threshold_distance_2 <=3:
 
                     q = collision_index_2[0]
                     print ("collision found with bot 2", q)
@@ -317,7 +317,7 @@ class TurtleBot3:
                         self.rate.sleep() 
                         break                   
 
-                while  collision_index_0 and threshold_distance_0 <=3: 
+                elif  collision_index_0 and threshold_distance_0 <=3: 
                         
                     q = collision_index_0[0]
                     print ("collision found with bot 0",q)
