@@ -22,16 +22,16 @@ class TurtleBot3:
         rospy.init_node('turtlebot3_controller_0', anonymous=True)
         self.velocity_publisher = rospy.Publisher('/tb3_0/cmd_vel', Twist, queue_size=1)
         self.path_publisher = rospy.Publisher('/path_topic_bot_0', Path, queue_size=1)  
-        #self.pose_subscriber = rospy.Subscriber('/apriltag_zero', Odometry, self.update_pose)  #APRIL TAG     
-        self.pose_subscriber = rospy.Subscriber('/tb3_0/odom', Odometry, self.update_pose)     
+        self.pose_subscriber = rospy.Subscriber('/apriltag_zero', Odometry, self.update_pose)  #APRIL TAG     
+        #self.pose_subscriber = rospy.Subscriber('/tb3_0/odom', Odometry, self.update_pose)     
 
         self.path1_subscriber =rospy.Subscriber('/path_topic_bot_1', Path, self.update_path1) #OTHER BOT PATH
-        self.pose1_subscriber = rospy.Subscriber('/tb3_1/odom', Odometry, self.update_pose1) #OTHER BOT POSE
-        #self.pose1_subscriber = rospy.Subscriber('/apriltag_one', Odometry, self.update_pose1)    
+        #self.pose1_subscriber = rospy.Subscriber('/tb3_1/odom', Odometry, self.update_pose1) #OTHER BOT POSE
+        self.pose1_subscriber = rospy.Subscriber('/apriltag_one', Odometry, self.update_pose1)    
 
         self.path2_subscriber =rospy.Subscriber('/path_topic_bot_2', Path, self.update_path2) #OTHER BOT PATH
-        self.pose2_subscriber = rospy.Subscriber('/tb3_2/odom', Odometry, self.update_pose2) #OTHER BOT POSE        
-        #self.pose2_subscriber = rospy.Subscriber('/apriltag_two', Odometry, self.update_pose2)
+        #self.pose2_subscriber = rospy.Subscriber('/tb3_2/odom', Odometry, self.update_pose2) #OTHER BOT POSE        
+        self.pose2_subscriber = rospy.Subscriber('/apriltag_two', Odometry, self.update_pose2)
 
         
         
@@ -296,8 +296,6 @@ class TurtleBot3:
                         vel_msg.linear.x = self.linear_vel(local_goal)
                         self.velocity_publisher.publish(vel_msg)
                         self.rate.sleep()
-
-
 
                     elif journal_code_1_orientation.right(r1_ang[0], r2_ang[0]) == 2:
 
