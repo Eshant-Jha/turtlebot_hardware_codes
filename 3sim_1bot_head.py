@@ -278,13 +278,30 @@ class TurtleBot3:
 
                         neighbour_robot=self.path2[q-1]
 
-                        self.path = search.aStarSearch(current_maze, 2, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
-                        print("new path for stand-on  ",self.path)
+                        give_way = search.aStarSearch(current_maze, 2, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
 
-                        local_goal=self.path[1]
+                        if give_way :
+                    
+                            try:
 
-                        
-                        i = 0
+                                start_index = self.path.index(current_state_of_robot)
+                            except ValueError:
+                                print("The point  is not in self.path")
+                                start_index = None
+
+                            # Append
+                            if start_index is not None:
+                                self.path=self.path[:start_index+1]
+                                print("path after removing redundant points i wont travel due to replanning   ",self.path)
+                                self.path.extend(give_way[1:])
+                                
+                            print("i have extended my path ")
+                            print("new path due for give-way  ",self.path)
+
+                        else:
+                            print("no way from right side so will continue my previous path  ")                   ####improvement area can be nullified if only future points are published 
+                            break
+
                         vel_msg.angular.z = self.angular_vel(local_goal)
                         vel_msg.linear.x = self.linear_vel(local_goal)
                         self.velocity_publisher.publish(vel_msg)
@@ -300,18 +317,32 @@ class TurtleBot3:
                         #shortcoming is that from present state it has to directly go to q-1 BUT IT CAN BE RECTIFIED BY USING THRESHOLD DISTANCE 
                         neighbour_robot=self.path2[q-1]
                         head_on_path= search.aStarSearch(current_maze, 2, current_state_of_robot, 3, collison_point, neighbour_robot, positions_after_collision)
+
                         if head_on_path :
-                           
-                            self.path=head_on_path
+                            
+                            
+                            #self.path= head_on_path
+                            #i = 0 #SINCE PATH REPLANNED SO IT HAS TO START FROM BEGINNING 
+                            try:
+
+                                start_index = self.path.index(current_state_of_robot)
+                            except ValueError:
+                                print("The point  is not in self.path")
+                                start_index = None
+
+                            # Append
+                            if start_index is not None:
+                                self.path=self.path[:start_index+1]
+                                print("path after removing redundant points i wont travel due to replanning   ",self.path)
+                                self.path.extend(head_on_path[1:])
+                                
+                            print("i have extended my path ")
+                            print("new path due to head-on  ",self.path)
+
                         else:
-                            print("not posible go right , so will continue my previous path  ")
+                            print("no way from right side so will continue my previous path  ")                   ####improvement area can be nullified if only future points are published 
+                            break
 
-
-                        
-                        #print("self bot subscribing the the path=",self.path0)    
-                        local_goal=self.path[1]
-                        #print("local goal changed to ",local_goal)
-                        i = 0 #SINCE PATH REPLANNED SO IT HAS TO START FROM BEGINNING 
                         vel_msg.angular.z = self.angular_vel(local_goal)
                         vel_msg.linear.x = self.linear_vel(local_goal)
                         self.velocity_publisher.publish(vel_msg)
@@ -344,13 +375,31 @@ class TurtleBot3:
                             
                         neighbour_robot=self.path0[q-1]
 
-                        self.path = search.aStarSearch(current_maze, 2, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
-                        print("new path  ",self.path)
+                        give_way = search.aStarSearch(current_maze, 2, current_state_of_robot, 2, collison_point, neighbour_robot, positions_after_collision)
 
-                        local_goal=self.path[1]
+                        if give_way :
+                    
+                            try:
 
-                        
-                        i = 0
+                                start_index = self.path.index(current_state_of_robot)
+
+                            except ValueError:
+                                print("The point  is not in self.path")
+                                start_index = None
+
+                            # Append
+                            if start_index is not None:
+                                self.path=self.path[:start_index+1]
+                                print("path after removing redundant points i wont travel due to replanning   ",self.path)
+                                self.path.extend(give_way[1:])
+                                
+                            print("i have extended my path ")
+                            print("new path due for give-way  ",self.path)
+
+                        else:
+                            print("no way from right side so will continue my previous path  ")                   ####improvement area can be nullified if only future points are published 
+                            break
+
                         vel_msg.angular.z = self.angular_vel(local_goal)
                         vel_msg.linear.x = self.linear_vel(local_goal)
                         self.velocity_publisher.publish(vel_msg)
@@ -365,23 +414,33 @@ class TurtleBot3:
                         current_state_of_robot = self.path[q-1]    #this is necessary to have logic work \
                         #shortcoming is that from present state it has to directly go to q-1 BUT IT CAN BE RECTIFIED BY USING THRESHOLD DISTANCE 
                         neighbour_robot=self.path0[q-1]
-                #####################################################################################################################################################################
+                
                         head_on_path= search.aStarSearch(current_maze, 2, current_state_of_robot, 3, collison_point, neighbour_robot, positions_after_collision)
+
                         if head_on_path :
-                            self.path=head_on_path
-                            i = 0 #SINCE PATH REPLANNED SO IT HAS TO START FROM BEGINNING 
+                            
+                            
+                            #self.path= head_on_path
+                            #i = 0 #SINCE PATH REPLANNED SO IT HAS TO START FROM BEGINNING 
+                            try:
 
-                            print("new path due to head-on  ",self.path) 
+                                start_index = self.path.index(current_state_of_robot)
+                            except ValueError:
+                                print("The point  is not in self.path")
+                                start_index = None
+
+                            # Append
+                            if start_index is not None:
+                                self.path=self.path[:start_index+1]
+                                print("path after removing redundant points i wont travel due to replanning   ",self.path)
+                                self.path.extend(head_on_path[1:])
+                                
+                            print("i have extended my path ")
+                            print("new path due to head-on  ",self.path)
+
                         else:
-                            print("no way from right side ")                   ####improvement area can be nullified if only future points are published 
+                            print("no way from right side so will continue my previous path  ")                   ####improvement area can be nullified if only future points are published 
                             break
-                ########################################################################################################################################################################
-                        #self.path = search.aStarSearch(current_maze, 2, current_state_of_robot, 3, collison_point, neighbour_robot, positions_after_collision)
-                        #print("new path due to head-on  ",self.path)
-                        #print("self bot subscribing the the path=",self.path0)    
-                        local_goal=self.path[1]
-                        #print("local goal changed to ",local_goal)
-
 
                         
 
