@@ -246,6 +246,18 @@ class TurtleBot3:
 
                 collision_index_1 =[index for index, (item1, item2) in enumerate(zip(self.path,self.path1)) if item1 == item2 and self.path.count(item1) == 1 and self.path1.count(item2) == 1]
                 collision_index_2 =[index for index, (item1, item2) in enumerate(zip(self.path,self.path2)) if item1 == item2 and self.path.count(item1) == 1 and self.path2.count(item2) == 1]
+
+
+
+                if not collision_index_1 :
+                    shifted_path=self.path1[1:]
+                    
+                    collision_index_1 =[index for index, (item1, item2) in enumerate(zip(self.path,shifted_path)) if item1 == item2 and self.path.count(item1) == 1 and shifted_path.count(item2) == 1]
+                    print("swapping condition collision index is ",collision_index_1)
+                if not collision_index_2 :
+                    shifted_path=self.path2[1:]
+                    collision_index_2 =[index for index, (item1, item2) in enumerate(zip(self.path,shifted_path)) if item1 == item2 and self.path.count(item1) == 1 and shifted_path.count(item2) == 1]
+                    print("swapping condition collision index is ",collision_index_2)
                 
                 ###################################################### 
                 bot_2_x = self.pose2.pose.pose.position.x
