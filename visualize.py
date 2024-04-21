@@ -16,6 +16,7 @@ plt.ion()
 class Visual :
 
     fig, ax1 = plt.subplots()
+    colormap={0:'blue',1:'red',2:'green'}
 
     def __init__(self,bot_id) :
           
@@ -30,7 +31,7 @@ class Visual :
           # scale for y values to adjust with the map
         self.heading_line_length = 15.0 #length of the black geading line
 
-
+        
         ##########################
 
         
@@ -54,6 +55,8 @@ class Visual :
         robot_x_plot = (self.robot_pose[0]*self.scale_x) + self.x_offset
         print("asdfg",robot_x_plot)
         robot_y_plot = (self.robot_pose[1]*self.scale_y) + self.y_offset
+
+       
 
         if self.bot_id ==0 :
            colour ='red'
@@ -110,10 +113,15 @@ class Visual :
         robot_x_plot = (self.robot_pose[1]*self.scale_x) + self.x_offset
         robot_y_plot = (self.robot_pose[0]*self.scale_y) + self.y_offset
         self.robot_point_plot_handle.set_offsets([robot_x_plot, robot_y_plot])  
+
+
+        if self.prev_robot_x_plot==0:
+            self.prev_robot_x_plot=robot_x_plot
+            self.prev_robot_y_plot=robot_y_plot
     
         #Update robot trail
-        
-        Visual.ax1.plot([robot_x_plot, self.prev_robot_x_plot], [robot_y_plot, self.prev_robot_y_plot],'k--')
+        trail_color=Visual.colormap.get(self.bot_id,'black')   
+        Visual.ax1.plot([robot_x_plot, self.prev_robot_x_plot], [robot_y_plot, self.prev_robot_y_plot],color=trail_color ,linestyle='--')
         self.prev_robot_x_plot = robot_x_plot
         self.prev_robot_y_plot = robot_y_plot
 
@@ -174,6 +182,6 @@ if __name__ == '__main__':
     
     #rospy.spin()
     #rate
-    rate = rospy.Rate(4)     #4Hz
+    rate = rospy.Rate(400)     #4Hz
     plt.show(block=True)
     rate.sleep()
