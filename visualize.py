@@ -16,7 +16,7 @@ plt.ion()
 class Visual :
 
     fig, ax1 = plt.subplots()
-    colormap={0:'blue',1:'red',2:'green'}
+    colormap={0:'red',1:'blue',2:'green'}
 
     def __init__(self,bot_id) :
           
