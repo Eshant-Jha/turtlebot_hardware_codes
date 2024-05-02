@@ -1,0 +1,112 @@
+# Instructions on adding IDS camera for April tag based pose estimation 
+
+## Setup the camera
+
+- Camera model used: UI-3060CP-C-HQ Rev.2
+
+- Download the IDS Software Suite from [here](https://en.ids-imaging.com/downloads.html) for the corresponding camera hardware. Remember to choose Linux 64 bit under the operating system option. You will be required to create a free account with IDS for accessing the software. I used the archive file installation option
+
+- Follow the instructions [here](https://en.ids-imaging.com/files/downloads/ids-software-suite/readme/readme-ids-software-suite-linux-4.95.2_EN.html#distributions) for extracting and installing the downloaded package. Remember to scroll down to the Archive set of instructions under the Installation section. I used the "run" script and no additional software packages were needed on my Ubunutu-20.04 machine.
+- Edit by don while trying to install the ueyecam using the run file for archice after installing there is one package missed installing so we tried each and every package installing seperately that worked fine and that was found by tejas
+
+- Finally connect the camera to your machine through USB/ethernet and the camera should have a solid green light, if it is recognized and working well. 
+
+
+## Setting up the ueye_cam ROS package
+
+- ueye_cam is a ROS interface for the uEye digital cameras. You can find the instructions for the same [here](http://wiki.ros.org/ueye_cam)
+
+- To avoid messing up the already existing ur_ws, I recommend creating a new sperate workspace for the ueye_cam. Follow the Build instructions given [here](http://wiki.ros.org/ueye_cam) to get the ROS node installed
+
+- With the camera connected execute the following commands in a terminal:
+
+```
+#Source the ueye_cam ws
+source ~/catkin_ws/devel_isolated/setup.bash
+
+roslaunch ueye_cam rgb8.launch
+```
+
+- To see all the topics being published, in a new terminal execute:
+```
+rostopic list
+```
+- In a new terminal launch Rviz 
+```
+rosrun rviz rviz 
+```
+Add a display for  image type and subscribe to the topic */camera/image_raw* to view the image being published
+
+## Calibrating the camera
+
+- Now that we have the camera publishing images under the topic */camera/image_raw*, next step would be to perform camera calibration. Follow instructions [here](https://wiki.ros.org/camera_calibration/Tutorials/MonocularCalibration) to perform the calibration 
+
+- MRPT provides a good checkerboard image that can be printed on A4 for the caliberation purpose, you can find the image [here](https://www.mrpt.org/downloads/camera-calibration-checker-board_9x7.pdf)
+
+- The resulting calibration data and files can be found in the Backup folder of this repository
+
+- For publishing the rectified camera images use [image_proc](http://wiki.ros.org/image_proc). Assuming the images are being published under the camera namespace execute the following in a new terminal:
+```
+ROS_NAMESPACE=camera rosrun image_proc image_proc
+```
+
+- You should be able to see the rectified images being published under the topic */camera/image_rect*
+
+## Using April tag to detect pose of objects
+
+- With the calibrated camera it is possible to detect the position and orientation of objects fitted with April tag.
+
+- Follow the Quick start instructions [here](https://github.com/AprilRobotics/apriltag_ros) to download and build the April tag repository. 
+
+    - Note: When setting up the package in the same workspace you will have to use *catkin_make_isolated* as *catkin_make* will not work with this package.
+
+    - If you used catkin_make_isolated to build the package then you will have to source the devel_isolated folder to launch any of the April tag packages and nodes. To do this execute the following command in a new terminal before launching the April tag functionalities:
+
+    ```
+    source catkin_ws/devel_isolated/setup.bash
+    ```
+- Once the package is built you can use the continuous detection functionality of April tags to detect pose of one or more tags in a continuous video stream. Follow instructions [here](http://wiki.ros.org/apriltag_ros/Tutorials/Detection%20in%20a%20video%20stream) following are somethings to note or change:
+
+    - You will have to edit the settings.yaml and tags.yaml file under *~/catkin_ws/src/apriltag_ros/apriltag_ros/config*.
+    
+    - Provide the tag_family details under settings.yaml. I have used the default tag36h11
+    
+    - Provide the id and size of the tag under standalone_tags field in the tags.yaml file. I have used tag id 6 with a size of 80 mm as:
+
+    ```
+    standalone_tags:
+    [
+        {id: 6, size: 0.08}
+    ]
+    ```
+    - You can find the tag images under 36h11 family in the Backup folder of this repository.
+
+    - Finally edit the continuous_detection launch file located at *~/catkin_ws/src/apriltag_ros/apriltag_ros/launch* to provide the correct name for the camera
+    ```
+    #Change line 4 to 
+     <arg name="camera_name" default="/camera" />
+    ```
+    - You should now be able to launch the continuous detection functionality as follows (Remember to source the devel_isolatated/setup.bash first):
+```
+roslaunch apriltag_ros continuous_detection.launch
+```
+
+    - The results of the tag detection can be viewed on the topic */tag_detections_image* or on the topic */tf*. Alternatively you can turn off the */tag_detections_image* in the continuous_detection launch  file to reduce the load on the system.
+    
+    
+    
+    to get the full view of the camera i have edited the camera resolution on two places one on the python file inside uicam / cfg , and in the particular launch file in my case rgb8.launch there i made these changes
+    <param name="image_width" type="int" value="1936" />
+    <param name="image_height" type="int" value="1216" />
+
+
+
+
+
+
+
+
+
+
+
+    
